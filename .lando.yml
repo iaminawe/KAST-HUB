@@ -1,0 +1,46 @@
+name: kast
+recipe: drupal9
+config:
+  webroot: html
+  composer_version: 2.3.7
+drupal: true
+proxy:
+  pma:
+    - pma.kast.lndo.site
+services:
+  appserver:
+    type: 'php:7.4'
+  pma:
+    type: phpmyadmin
+    hosts:
+      - database
+events:
+  pre-start:
+    - echo "Welcome to the KAST Dev Environment"
+    - >-
+      echo
+      "-----------------------------------------------------------------------------------------"
+  post-db-import:
+    - appserver: drush version && echo "The Database has finished importing."
+    - appserver: >-
+        echo "Clearing
+        caches-------------------------------------------------------------------------------"
+    - appserver: cd $LANDO_WEBROOT && drush cr
+    - appserver: echo "Congratulations you are all done."
+  post-start:
+    - echo ""
+    - >-
+      echo
+      "-----------------------------------------------------------------------------------------"
+    - echo "Your new KAST Development Environment has been created."
+    - >-
+      echo
+      "-----------------------------------------------------------------------------------------"
+    - echo "Use the following command to import this default database"
+    - >-
+      echo
+      "-----------------------------------------------------------------------------------------"
+    - echo "lando db-import databases/plays-database.sql.gz"
+    - >-
+      echo
+      "-----------------------------------------------------------------------------------------"
